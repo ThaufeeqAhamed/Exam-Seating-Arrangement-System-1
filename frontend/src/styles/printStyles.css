@@ -1,0 +1,114 @@
+/* Print-specific styles */
+
+@media print {
+  /* Hide elements not needed in print */
+  header, 
+  footer, 
+  nav,
+  .MuiButton-root,
+  .MuiIconButton-root,
+  .MuiFormControl-root,
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Show print-only elements */
+  .print-only {
+    display: block !important;
+  }
+  
+  /* Ensure page breaks don't cut through elements */
+  .bench-row {
+    page-break-inside: avoid;
+  }
+  
+  /* Ensure colors and backgrounds print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Style adjustments */
+  body {
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Make text darker for better printing */
+  .MuiTypography-root {
+    color: #000 !important;
+  }
+  
+  /* Make bench cards compact */
+  .bench-card {
+    border: 1px solid #aaa !important;
+    box-shadow: none !important;
+  }
+  
+  /* Department specific styling */
+  .department-list {
+    column-count: 2;
+    column-gap: 2em;
+  }
+  
+  /* Don't collapse grid on print */
+  .MuiGrid-item {
+    width: auto !important;
+    flex-basis: auto !important;
+  }
+}
+
+/* Print-specific content that's hidden on screen */
+.print-only {
+  display: none;
+}
+
+/* When in print preview mode */
+.print-content {
+  background-color: white;
+}
+
+/* Enhance bench cards for printing */
+.print-content .bench-card {
+  border: 1px solid #aaa;
+}
+
+/* Add more spacing for student details */
+.print-content .student-details {
+  margin: 4px 0;
+}
+
+/* Format student information clearly */
+.student-roll {
+  font-weight: bold;
+}
+
+.student-name {
+  font-style: italic;
+}
+
+.student-dept {
+  font-size: 0.9em;
+}
+
+/* Tabular data formatting */
+.seating-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.seating-table th, 
+.seating-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.seating-table th {
+  background-color: #f2f2f2;
+}
+
+.seating-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+} 
