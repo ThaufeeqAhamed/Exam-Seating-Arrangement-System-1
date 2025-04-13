@@ -33,7 +33,7 @@ const redirectToLogin = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
-  
+
   // Only redirect if not already on login page to avoid loops
   if (!window.location.pathname.includes('/login')) {
     window.location.href = '/login';
@@ -61,11 +61,11 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    
+
     // If error is 401 and not already trying to refresh
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         // Try to refresh the token
         const refreshToken = localStorage.getItem('refreshToken');
@@ -74,16 +74,16 @@ api.interceptors.response.use(
           redirectToLogin();
           return Promise.reject(error);
         }
-        
+
         // Call the refresh endpoint
         const response = await axios.post(`${API_URL}auth/token/refresh/`, {
           refresh: refreshToken
         });
-        
+
         // If refresh successful, update tokens and retry
         if (response.data.access) {
           localStorage.setItem('accessToken', response.data.access);
-          
+
           // Retry the original request with new token
           originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
           return axios(originalRequest);
@@ -95,7 +95,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -113,13 +113,13 @@ export const signupUser = async (userData) => {
 export const loginUser = async (email, password) => {
   try {
     const response = await api.post('auth/token/', { email, password });
-    
+
     if (response.data.access) {
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
       localStorage.setItem('user', JSON.stringify(response.data.user));
     }
-    
+
     return response.data;
   } catch (error) {
     console.error('Login error:', error);
@@ -219,11 +219,15 @@ export const getDepartmentSeating = async (examId) => {
 export const uploadTimetableFile = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
-  // console.log(formData.file)
 
-  // console.log(file)
-  // console.log(JSON.parse(file))
+  // Debug
+  // console.log("Selected file: ", file);
+  // console.log("file contents: \n");
+  // for (let pair of formData.entries()) {
+  //   console.log(pair[0] + ':' + pair[1])
+  // }
 
+  // Update data is being pushed to backend
   try {
     const response = await api.post('timetables/upload_file/', formData, {
       headers: {
