@@ -355,83 +355,89 @@ class TimetableViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'], url_path="upload_file")
     def upload_file(self, request):
-        print("Request recieved at timetable upload endpoint.")
-        print(request.FILES)
-        print(request.POST)
         if 'file' not in request.FILES:
             print("No file key in request.FILES")
             return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
 
         file = request.FILES['file']
-        print(f"File recieved: {file.name}, size: {file.size} bytes")
+
+        if not file.name.endswith('.pdf'):
+            return Response({'error': 'Please upload a PDF file only'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            wb = load_workbook(file)
-            print("Workbook loaded successfully")
-            sheet = wb.active
-            required_columns = {'subject_code', 'subject_name', 'date', 'start_time'}
-            headers = {cell.value for cell in sheet[1]}
 
-            if not required_columns.issubset(headers):
-                raise ValidationError(f"Missing required columns: {required_columns - headers}")
+            pass
+            # Implementation Pending: Process PDF using OCR (getting images in pdf and not text content)
 
-            created, updated, errors = 0, 0, []
 
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                try:
-                    if not row[0]:  # Skip empty rows
-                        continue
 
-                    # Get column indices from headers
-                    header_list = list(cell.value for cell in sheet[1])
-                    subject_code_idx = header_list.index('subject_code')
-                    subject_name_idx = header_list.index('subject_name')
-                    date_idx = header_list.index('date')
-                    start_time_idx = header_list.index('start_time')
+            # wb = load_workbook(file)
+            # print("Workbook loaded successfully")
+            # sheet = wb.active
+            # required_columns = {'subject_code', 'subject_name', 'date', 'start_time'}
+            # headers = {cell.value for cell in sheet[1]}
 
-                    # Optional fields
-                    department_idx = header_list.index('department') if 'department' in headers else None
-                    end_time_idx = header_list.index('end_time') if 'end_time' in headers else None
-                    exam_type_idx = header_list.index('exam_type') if 'exam_type' in headers else None
+            # if not required_columns.issubset(headers):
+            #     raise ValidationError(f"Missing required columns: {required_columns - headers}")
 
-                    # Prepare data
-                    timetable_data = {
-                        'subject_code': row[subject_code_idx],
-                        'subject_name': row[subject_name_idx],
-                        'date': row[date_idx],
-                        'start_time': row[start_time_idx],
-                        'department': row[department_idx] if department_idx is not None else '',
-                        'end_time': row[end_time_idx] if end_time_idx is not None else None,
-                        'exam_type': row[exam_type_idx] if exam_type_idx is not None else 'semester'
-                    }
+            # created, updated, errors = 0, 0, []
 
-                    # Create or update timetable entry
-                    timetable, created_flag = Timetable.objects.update_or_create(
-                        subject_code=timetable_data['subject_code'],
-                        date=timetable_data['date'],
-                        start_time=timetable_data['start_time'],
-                        defaults=timetable_data
-                    )
+            # for row in sheet.iter_rows(min_row=2, values_only=True):
+            #     try:
+            #         if not row[0]:  # Skip empty rows
+            #             continue
 
-                    if created_flag:
-                        created += 1
-                    else:
-                        updated += 1
+            #         # Get column indices from headers
+            #         header_list = list(cell.value for cell in sheet[1])
+            #         subject_code_idx = header_list.index('subject_code')
+            #         subject_name_idx = header_list.index('subject_name')
+            #         date_idx = header_list.index('date')
+            #         start_time_idx = header_list.index('start_time')
 
-                except Exception as e:
-                    errors.append(f"Row {row} - Error: {str(e)}")
+            #         # Optional fields
+            #         department_idx = header_list.index('department') if 'department' in headers else None
+            #         end_time_idx = header_list.index('end_time') if 'end_time' in headers else None
+            #         exam_type_idx = header_list.index('exam_type') if 'exam_type' in headers else None
 
-            if created == 0 and updated == 0:
-                return Response({
-                    "error": "No timetable entries were processed. Please check your file format.",
-                    "details": errors
-                }, status=status.HTTP_400_BAD_REQUEST)
+            #         # Prepare data
+            #         timetable_data = {
+            #             'subject_code': row[subject_code_idx],
+            #             'subject_name': row[subject_name_idx],
+            #             'date': row[date_idx],
+            #             'start_time': row[start_time_idx],
+            #             'department': row[department_idx] if department_idx is not None else '',
+            #             'end_time': row[end_time_idx] if end_time_idx is not None else None,
+            #             'exam_type': row[exam_type_idx] if exam_type_idx is not None else 'semester'
+            #         }
 
-            return Response({
-                "message": "Timetable data uploaded successfully.",
-                "created": created,
-                "updated": updated,
-                "errors": errors
-            }, status=status.HTTP_200_OK)
+            #         # Create or update timetable entry
+            #         timetable, created_flag = Timetable.objects.update_or_create(
+            #             subject_code=timetable_data['subject_code'],
+            #             date=timetable_data['date'],
+            #             start_time=timetable_data['start_time'],
+            #             defaults=timetable_data
+            #         )
+
+            #         if created_flag:
+            #             created += 1
+            #         else:
+            #             updated += 1
+
+            #     except Exception as e:
+            #         errors.append(f"Row {row} - Error: {str(e)}")
+
+            # if created == 0 and updated == 0:
+            #     return Response({
+            #         "error": "No timetable entries were processed. Please check your file format.",
+            #         "details": errors
+            #     }, status=status.HTTP_400_BAD_REQUEST)
+
+            # return Response({
+            #     "message": "Timetable data uploaded successfully.",
+            #     "created": created,
+            #     "updated": updated,
+            #     "errors": errors
+            # }, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

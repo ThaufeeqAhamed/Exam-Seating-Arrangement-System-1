@@ -216,17 +216,7 @@ export const getDepartmentSeating = async (examId) => {
 };
 
 // Timetable services
-export const uploadTimetableFile = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  // Debug
-  // console.log("Selected file: ", file);
-  // console.log("file contents: \n");
-  // for (let pair of formData.entries()) {
-  //   console.log(pair[0] + ':' + pair[1])
-  // }
-
+export const uploadTimetableFile = async (formData) => {
   // Update data is being pushed to backend
   try {
     const response = await api.post('timetables/upload_file/', formData, {
@@ -234,6 +224,7 @@ export const uploadTimetableFile = async (file) => {
         'Content-Type': 'multipart/form-data'
       }
     });
+    console.log("response: ", response)
     return response;
   } catch (error) {
     console.error('Error uploading timetable:', error);

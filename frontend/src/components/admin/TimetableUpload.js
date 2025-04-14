@@ -47,12 +47,12 @@ const TimetableUpload = () => {
   // First window states
   const [examType, setExamType] = useState('semester');
   const [pdfFile, setPdfFile] = useState(null);
-  
+
   // Second window states (form data)
   const [department, setDepartment] = useState('');
   const [year, setYear] = useState('');
   const [semester, setSemester] = useState('');
-  
+
   // Extracted and editable data states
   const [extractedData, setExtractedData] = useState(null);
   const [entries, setEntries] = useState([{
@@ -61,7 +61,7 @@ const TimetableUpload = () => {
     exam_date: '',
     exam_time: ''
   }]);
-  
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) {
@@ -86,7 +86,7 @@ const TimetableUpload = () => {
     setProcessing(true);
     setError('');
     setSuccess('');
-    
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -97,7 +97,7 @@ const TimetableUpload = () => {
 
       // Upload and process the file
       const response = await uploadTimetableFile(formData);
-      
+
       if (response.data.error) {
         throw new Error(response.data.error);
       }
@@ -105,7 +105,7 @@ const TimetableUpload = () => {
       // Update success message
       setSuccess('Timetable data extracted successfully!');
       setExtractedData(response.data);
-      
+
       // Process and validate entries
       const extractedEntries = response.data.entries || [];
       if (extractedEntries.length === 0) {
@@ -113,12 +113,12 @@ const TimetableUpload = () => {
       }
 
       setEntries(extractedEntries);
-      
+
       // Handle warnings if present
       if (response.data.warnings?.length > 0) {
         setError('Note: Some entries require attention:\n' + response.data.warnings.join('\n'));
       }
-      
+
       // Show the form after successful processing
       setTimeout(() => {
         setShowSecondWindow(true);
@@ -222,7 +222,7 @@ const TimetableUpload = () => {
           <Typography variant="h6" gutterBottom>
             Select Exam Type and Upload Timetable
           </Typography>
-          
+
           <FormControl fullWidth sx={{ mb: 4 }}>
             <InputLabel>Exam Type</InputLabel>
             <Select
