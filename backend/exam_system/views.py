@@ -372,6 +372,7 @@ class TimetableViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            print("File recieved. Processing file...")
             # Process the PDF file and extract timetable entries
             entries, errors = process_pdf_timetable(file)
 
